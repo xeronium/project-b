@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: namespace-b
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: random-number-deployment
+  labels:
+    app: random-number
+spec:
+  revisionHistoryLimit: 0
+  replicas: 2
+  selector:
+    matchLabels:
+      app: random-number
+  template:
+    metadata:
+      labels:
+        app: random-number
+    spec:
+      containers:
+      - name: random-number
+        imagePullPolicy: IfNotPresent
+        image: georgesjamous/randomnumberapp:v3.0.3
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "50m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: random-number-service
+spec:
+  type: NodePort
+  selector:
+    app: random-number
+  ports:
+    - port: 8080
+      targetPort: 8080
